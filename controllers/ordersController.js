@@ -1,31 +1,27 @@
-const Order = require('../models/Order');
+const jwt = require('jsonwebtoken');
 
-exports.addOrder = async (req, res) => {
-  try {
-    const newOrder = await Order.create(req.body);
-    res.status(201).json({ status: 'success', data: newOrder });
-  } catch (error) {
-    res.status(400).json({ status: 'fail', message: error.message });
-  }
-};
+// Mock admin credentials
+const ADMIN_USER = { username: "admin", password: "admin123" };
 
-exports.getAllOrders = async (req, res) => {
-  try {
-    const orders = await Order.find();
-    res.status(200).json({ status: 'success', data: orders });
-  } catch (error) {
-    res.status(500).json({ status: 'fail', message: error.message });
-  }
-};
+exports.login = (req, res) => {
+    const { username, password } = req.body;
 
-exports.getOrder = async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ status: 'fail', message: 'Order not found' });
+    if (username === ADMIN_USER.username && password === ADMIN_USER.password) {
+        // Genereer JWT-token
+        const token = jwt.sign(
+            { username: ADMIN_USER.username, role: 'admin' },
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzNjc0MTAzLCJleHAiOjE3MzM2Nzc3MDN9.0pioZ7DZ0CwM_-6gv42jpcm__SKKyNYV13y3_h8cuqw', // Zet hier je secret key
+            { expiresIn: '1h' }
+        );
+
+        res.status(200).json({
+            status: "success",
+            data: { token }
+        });
+    } else {
+        res.status(401).json({
+            status: "fail",
+            message: "Unauthorized: Invalid credentials"
+        });
     }
-    res.status(200).json({ status: 'success', data: order });
-  } catch (error) {
-    res.status(500).json({ status: 'fail', message: error.message });
-  }
 };

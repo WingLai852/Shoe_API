@@ -1,11 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth'); // Adjust the path as necessary
+const cors = require('cors');
 
 const app = express();
 
 // Middleware and other configurations
 app.use(express.json());
+app.use(cors()); // Allow cross-origin requests
 
 // Use the routes
 app.use('/api/v1', authRoutes);
