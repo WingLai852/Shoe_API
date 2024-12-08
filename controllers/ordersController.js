@@ -38,13 +38,27 @@ exports.getOrder = async (req, res) => {
   }
 };
 
-// Update een bestelling
 exports.updateOrder = async (req, res) => {
   try {
-    const updatedOrder = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json({ status: 'success', data: updatedOrder });
+    const { id } = req.params; // Haal de order ID op
+    const { status } = req.body; // Haal de nieuwe status op uit de request body
+
+    // Valideer input
+    if (!status) {
+      return res.status(400).json({ status: 'fail', message: 'Status is required' });
+    }
+
+    // Zoek en update de bestelling
+    const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
+
+    if (!order) {
+      return res.status(404).json({ status: 'fail', message: 'Bestelling niet gevonden' });
+    }
+
+    return res.status(200).json({ status: 'success', data: order });
   } catch (error) {
-    res.status(500).json({ status: 'error', message: error.message });
+    console.error(error);
+    return res.status(500).json({ status: 'error', message: 'Server error' });
   }
 };
 

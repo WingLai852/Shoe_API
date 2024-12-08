@@ -9,5 +9,6 @@ router.get('/', authMiddleware, ordersController.getAllOrders);
 router.get('/:id', authMiddleware, ordersController.getOrder);
 router.put('/:id', authMiddleware, ordersController.updateOrder);
 router.delete('/:id', authMiddleware, ordersController.deleteOrder);
+router.put('/api/v1/orders/:id', authMiddleware, ordersController.updateOrder);
 
 module.exports = router;
